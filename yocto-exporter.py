@@ -1,6 +1,5 @@
 from prometheus_client import start_http_server, Gauge
 from yoctopuce.yocto_api import *
-from time import sleep
 from signal import pause
 
 errmsg = YRefParam()
