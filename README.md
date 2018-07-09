@@ -1,2 +1,2 @@
 # yocto-exporter
-Prometheus exporter for Yocto-Meteo
+Prometheus exporter for Yoctopice sensors
