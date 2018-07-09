@@ -5,24 +5,30 @@ from yoctopuce.yocto_humidity import *
 from time import sleep
 from signal import pause
 
-UNIT = 'F'
-
 errmsg = YRefParam()
 if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error :" + errmsg.value)
 
-t = YTemperature.FirstTemperature()
-if t is None : sys.exit("No temperature sensor found");
+s = YSensor.FirstSensor()
+while s is not None:
+    (Gauge(s.get_functionId(), 'Current reading', ['unit', 'hardwareId'])
+        .labels(s.get_unit(), s.get_hardwareId())
+        .set_function(s.get_currentValue))
+    s = s.nextSensor()
 
-h = YHumidity.FirstHumidity()
-if h is None : sys.exit ("No humidity sensor found");
+#t = YTemperature.FirstTemperature()
+#while t is not None:
+#    (Gauge('temperature', 'Current temperature', ['unit', 'hardwareId'])
+#        .labels(t.get_unit(), t.get_hardwareId())
+#        .set_function(t.get_currentValue))
+#    t = t.nextTemperature()
 
-if t.get_unit() != UNIT:
-    t.set_unit(UNIT)
-    sleep(1)
-
-temp_gauge = Gauge('temperature', 'Temperature in {}'.format(UNIT))
-temp_gauge.set_function(t.get_currentValue)
+#h = YHumidity.FirstHumidity()
+#while h is not None:
+#    (Gauge('humidity', 'Current humidity', ['unit', 'hardwareId'])
+#        .labels(t.get_unit(), h.get_hardwareId())
+#        .set_function(t.get_currentValue))
+#    h = h.nextTemperature()
 
 if __name__ == '__main__':
     # Start up the server to expose the metrics.
